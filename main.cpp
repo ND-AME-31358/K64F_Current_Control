@@ -101,6 +101,7 @@ int main (void) {
                 wait(.001);                  // Control and sending data in 1kHz
             }     
             // Cleanup after experiment
+            currentLoopTicker.detach();
             server.setExperimentComplete();
             setMotorVoltage(0,M1INA,M1INB,M1PWM);
         } // end if
