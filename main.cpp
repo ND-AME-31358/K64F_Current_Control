@@ -5,8 +5,16 @@
 #include "QEI.h"
 #define PI 3.14159265358979323846
 
+// Trick to bypass ISR error
+class MyAnalogIn : public AnalogIn {
+public:
+    MyAnalogIn(PinName inp) : AnalogIn(inp) { }
+    virtual void lock() { }
+    virtual void unlock() { }
+};
+
 // Define number of communication parameters with matlab
-#define NUM_INPUTS 6
+#define NUM_INPUTS 5
 #define NUM_OUTPUTS 5
 
 Serial pc(USBTX, USBRX,115200);     // USB Serial Terminal for debugging
@@ -35,6 +43,20 @@ void setMotorDuty(float duty, DigitalOut &INA, DigitalOut &INB, PwmOut &PWM);
 const float SupplyVoltage = 12;     // Supply voltage in Volts
 void setMotorVoltage(float voltage, DigitalOut &INA, DigitalOut &INB, PwmOut &PWM);
 
+void currentLoopFunc();
+
+
+
+float angle = 0.0;
+float velocity = 0.0;
+float voltage = 0.0;
+float current = 0.0;
+
+float current_des   = 0.0f; // Desired current
+float Kp   = 0.0; // Kp
+float Rm   = 0.0; // Resistance
+float Kb   = 0.0; // Kb
+
 int main (void) {
     // Link the terminal with our server and start it up
     server.attachTerminal(pc);
@@ -49,40 +71,22 @@ int main (void) {
     while(1) {
         if (server.getParams(input_params,NUM_INPUTS)) {
             // Unpack parameters from MATLAB
-            float angle_des = input_params[0];  // Desired angle
-            float vel_des   = input_params[1];  // Desired velocity
-            float Kp        = input_params[2];  // Kp
-            float Kd        = input_params[3];  // Kd
-            float Ki        = input_params[4];  // Ki
-            float ExpTime   = input_params[5];  // Expriement time in second
+            current_des   = input_params[0]; // Desired current
+            Rm            = input_params[1]; // Resistance of motor
+            Kb            = input_params[2]; // Kb (Back EMF)
+            Kp            = input_params[3]; // Kp
+            float ExpTime = input_params[4]; // Expriement time in second
 
             // Setup experiment
             t.reset();
             t.start();
             encoder.reset();
             setMotorVoltage(0,M1INA,M1INB,M1PWM);
-            float err_integration = 0.0;        // Integration of angle error
+            // Set high frequency corrent loop control
+            currentLoopTicker.attach(&currentLoopFunc,0.0002);
 
             // Run experiment
             while( t.read() < ExpTime ) { 
-                
-                // Read angle from encoder
-                float angle = (float)encoder.getPulses()*radPerTick;
-                // Read velocity from encoder
-                float velocity = encoder.getVelocity()*radPerTick;
-/************************Complete the computation of current sensing***************/
-                // Copy current sensing code from previous part
-                // Read the current sensor value
-                float current = 36.7f * CS - 18.4f;
-/*********************************************************************************/
-                // Integrate the error
-                err_integration += angle - angle_des;
-
-/***************PID Controller***************************************************************************/
-                float voltage;
-                voltage = Kp * (angle - angle_des) + Kd * (velocity - vel_des) + Ki * err_integration;
-                setMotorVoltage(voltage,M1INA,M1INB,M1PWM);
-/********************************************************************************************************/
 
                 // Form output to send to MATLAB    
                 float output_data[NUM_OUTPUTS];
@@ -104,6 +108,20 @@ int main (void) {
 } // end main
 
 
+void currentLoopFunc(){
+/************************Complete the computation of current sensing***************/
+    // Copy current sensing code from previous part
+    // Read the current sensor value
+    current = 36.7f * CS - 18.4f;
+/*********************************************************************************/
+    angle = (float)encoder.getPulses()*radPerTick;
+    velocity = encoder.getVelocity()*radPerTick;
+/************************Current Control Code***************/
+    voltage = Rm * current_des + Kb * velocity - Kp*(current - current_des);
+/*********************************************************************************/
+    setMotorVoltage(voltage,M1INA,M1INB,M1PWM);
+
+}
 
 //Set motor voltage (nagetive means reverse)
 void setMotorVoltage(float voltage, DigitalOut &INA, DigitalOut &INB, PwmOut &PWM){

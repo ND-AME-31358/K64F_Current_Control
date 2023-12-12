@@ -1,4 +1,4 @@
-function output_data = K64_PID_matlab()
+function output_data = K64_Current_Control_matlab()
     figure(1);  clf;       % Create an empty figure to update later
     subplot(411)
     h1 = plot([0],[0]);
@@ -51,15 +51,13 @@ function output_data = K64_PID_matlab()
 %     input = [v1 v2];    % input sent to FRDM board
 %     output_size = 3;    % number of outputs expected
 
-    angle_des = pi/2; 
-    vel_des = 0.0; 
-    % Current Controller
-    Kp = 5;
-    Kd = 0.1;
-    Ki = 0.00;
+    current_des = 1.0; 
+    Kb = 0.8;
+    % P Controller
+    Kp = 3;
     ExpTime = 3 ; % Expriement time
     
-    input = [angle_des vel_des Kp Kd Ki ExpTime];
+    input = [current_des R_motor Kb Kp ExpTime];
     output_size = 5;
    
     output_data = RunExperiment(frdm_ip,frdm_port,input,output_size,params);
