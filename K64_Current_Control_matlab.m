@@ -52,6 +52,7 @@ function output_data = K64_Current_Control_matlab()
 %     output_size = 3;    % number of outputs expected
 
     current_des = 1.0; 
+    R_motor = 3.8;
     Kb = 0.8;
     % P Controller
     Kp = 3;
