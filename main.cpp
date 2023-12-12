@@ -27,7 +27,7 @@ Ticker currentLoopTicker;           // Ticker to call high frequency current loo
 PwmOut     M1PWM(D9);              // Motor PWM output
 DigitalOut M1INA(D2);               // Motor forward enable
 DigitalOut M1INB(D4);               // Motor backward enable
-AnalogIn   CS(A2);                  // Current sensor
+MyAnalogIn   CS(A2);                  // Current sensor
 /*********************************************************************************/
 
 // Create a quadrature encoder
