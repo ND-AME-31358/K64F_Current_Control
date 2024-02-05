@@ -135,6 +135,10 @@ int main (void) {
 } // end main
 
 
+/* Current controller function (low-level control)
+ * This function would be called by the Ticker:currentLoopTicker under 5kHz
+ * This function reads motor state (e.g. angle, current), and set motor voltage
+*/
 void currentLoopFunc(){
     /* ===== Complete the code in this block =====
      * Copy the current sensing code from your previous project
