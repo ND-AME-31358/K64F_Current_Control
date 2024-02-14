@@ -51,12 +51,12 @@ function output_data = K64_Current_Control_matlab()
     %% Set experiment parameters
     current_des = 1.0; % Desired current
     R_motor     = 3.8; % Winding resistance of motor
-    Kb          = 0.0; % Motor back-EMF constant
+    kb          = 0.0; % Motor back-EMF constant
     Kp          = 3;   % Proportional controller gain
     ExpTime     = 3 ;  % Expriement time
     
     % Pack experiment parameters
-    input = [current_des R_motor Kb Kp ExpTime];
+    input = [current_des R_motor kb Kp ExpTime];
     
     % Number of report data from FRDM
     output_size = 5; % time, angle, veloticy, voltage, current
