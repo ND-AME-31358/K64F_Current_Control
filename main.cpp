@@ -71,7 +71,7 @@ float current  = 0.0;    // Sensed motor current
 float current_des = 0.0; // Desired motor current (a.k.a. command current)
 float Kp       = 0.0;    // Proportional gain
 float Rm       = 0.0;    // Motor Winding Resistance
-float Kb       = 0.0;    // Motor Back-EMF constant
+float kb       = 0.0;    // Motor Back-EMF constant
 
 /* Main function that would run on the FRDM board
  * Note: unlike Arduino, we do not have a setup function and a loop function
@@ -96,7 +96,7 @@ int main (void) {
             // Unpack parameters from MATLAB
             current_des   = input_params[0]; // Desired current
             Rm            = input_params[1]; // Motor Winding Resistance
-            Kb            = input_params[2]; // Kb, Motor Back-EMF constant
+            kb            = input_params[2]; // kb, Motor Back-EMF constant
             Kp            = input_params[3]; // Proportional gain
             float ExpTime = input_params[4]; // Expriement time in second
 
