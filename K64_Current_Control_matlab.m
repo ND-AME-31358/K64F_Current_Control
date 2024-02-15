@@ -17,9 +17,11 @@ function output_data = K64_Current_Control_matlab()
     h3.XData = []; h3.YData = [];
     ylabel('Voltage (V)');
     
-    subplot(414)
+    subplot(414); hold on
     h4 = plot([0],[0]);
     h4.XData = []; h4.YData = [];
+    h42 = plot([0],[0], 'r');
+    h42.XData = []; h42.YData = [];
     ylabel('Current (A)');
     
     % This function will get called any time there is new data from
@@ -40,6 +42,8 @@ function output_data = K64_Current_Control_matlab()
         h3.YData(end+1:end+N) = volt;
         h4.XData(end+1:end+N) = t;   % Update subplot 4
         h4.YData(end+1:end+N) = current;
+        h42.XData(end+1:end+N) = t;   % Draw desired current
+        h42.YData(end+1:end+N) = current_des*ones(N,1);
     end
     
     % Setup the communication between PC and FRDM board
