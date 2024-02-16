@@ -23,6 +23,7 @@ function output_data = K64_Current_Control_matlab()
     h42 = plot([0],[0], 'r');
     h42.XData = []; h42.YData = [];
     ylabel('Current (A)');
+    legend("Sensed", "Desired");
     
     % This function will get called any time there is new data from
     % the FRDM board. Data comes in blocks, rather than one at a time.
